@@ -25,6 +25,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"github.com/Azure/go-ntlmssp"
 	"strconv"
 	"strings"
 	"time"
@@ -161,12 +162,12 @@ func createPingFactory(
 		client := &http.Client{
 			CheckRedirect: checkRedirect,
 			Timeout:       timeout,
-			Transport: &SimpleTransport{
+			Transport: ntlmssp.Negotiator{&SimpleTransport{
 				Dialer:       dialer,
 				OnStartWrite: func() { writeStart = time.Now() },
 				OnEndWrite:   func() { writeEnd = time.Now() },
 				OnStartRead:  func() { readStart = time.Now() },
-			},
+			}},
 		}
 
 		_, end, result, err := execPing(client, request, body, timeout, validator)
